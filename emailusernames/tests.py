@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate
-from wa_user.models import WAUser as User
+from djcmd.user_utils import get_user_model
 from django.db import IntegrityError
 from django.test import TestCase
 from emailusernames.utils import create_user
@@ -15,7 +15,7 @@ class CreateUserTests(TestCase):
 
     def test_can_create_user(self):
         user = create_user(self.email, self.password)
-        self.assertEquals(list(User.objects.all()), [user])
+        self.assertEquals(list(get_user_model().objects.all()), [user])
 
     def test_can_create_user_with_long_email(self):
         padding = 'a' * 30
@@ -30,7 +30,7 @@ class CreateUserTests(TestCase):
         https://github.com/dabapps/django-email-as-username/issues/52
 
         """
-        User.objects.create(email=self.email, id=1)
+        get_user_model().objects.create(email=self.email, id=1)
 
 
 

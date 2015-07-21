@@ -1,16 +1,16 @@
 from django.contrib.admin.sites import AdminSite
-from wa_user.models import WAUser as User
+from djcmd.user_utils import get_user_model
 from emailusernames.forms import EmailAdminAuthenticationForm
 from emailusernames.utils import _email_to_username
 
 
 # Horrible monkey patching.
-# User.username always presents as the email, but saves as a hash of the email.
+# get_user_model().username always presents as the email, but saves as a hash of the email.
 # It would be possible to avoid such a deep level of monkey-patching,
 # but Django's admin displays the "Welcome, username" using user.username,
 # and there's really no other way to get around it.
 def user_init_patch(self, *args, **kwargs):
-    super(User, self).__init__(*args, **kwargs)
+    super(get_user_model(), self).__init__(*args, **kwargs)
     self._username = self.username
     if self.username == _email_to_username(self.email):
         # Username should be replaced by email, since the hashes match
@@ -37,7 +37,7 @@ def user_save_patch(self, *args, **kwargs):
         #self.username = _email_to_username(self.email)
         self.username = id_generator(12)
     try:
-        super(User, self).save_base(*args, **kwargs)
+        super(get_user_model(), self).save_base(*args, **kwargs)
     finally:
         if email_as_username:
             self.username = self.email
@@ -47,18 +47,18 @@ def user_save_patch(self, *args, **kwargs):
         #self.username = id_generator(12)
 
 
-original_init = User.__init__
-original_save_base = User.save_base
+original_init = get_user_model().__init__
+original_save_base = get_user_model().save_base
 
 
 def monkeypatch_user():
-    User.__init__ = user_init_patch
-    User.save_base = user_save_patch
+    get_user_model().__init__ = user_init_patch
+    get_user_model().save_base = user_save_patch
 
 
 def unmonkeypatch_user():
-    User.__init__ = original_init
-    User.save_base = original_save_base
+    get_user_model().__init__ = original_init
+    get_user_model().save_base = original_save_base
 
 
 monkeypatch_user()

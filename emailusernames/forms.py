@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from django.contrib.admin.forms import AdminAuthenticationForm
-from wa_user.models import WAUser as User
+from djcmd.user_utils import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from emailusernames.utils import user_exists
 
@@ -75,7 +75,7 @@ class EmailUserCreationForm(UserCreationForm):
     email = forms.EmailField(label=_("Email"), max_length=75)
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ("email",)
 
     def __init__(self, *args, **kwargs):
@@ -102,7 +102,7 @@ class EmailUserChangeForm(UserChangeForm):
     email = forms.EmailField(label=_("Email"), max_length=75)
 
     class Meta:
-        model = User
+        model = get_user_model()
 
     def __init__(self, *args, **kwargs):
         super(EmailUserChangeForm, self).__init__(*args, **kwargs)

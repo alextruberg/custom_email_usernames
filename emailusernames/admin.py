@@ -2,7 +2,7 @@
 Override the add- and change-form in the admin, to hide the username.
 """
 from django.contrib.auth.admin import UserAdmin
-from wa_user.models import WAUser as User
+from djcmd.user_utils import get_user_model
 from django.contrib import admin
 from emailusernames.forms import EmailUserCreationForm, EmailUserChangeForm
 from django.utils.translation import ugettext_lazy as _

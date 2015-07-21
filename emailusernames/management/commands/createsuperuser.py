@@ -7,7 +7,7 @@ import getpass
 import re
 import sys
 from optparse import make_option
-from wa_user.models import WAUser as User
+from djcmd.user_utils import get_user_model
 from django.core import exceptions
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext as _
@@ -73,7 +73,7 @@ class Command(BaseCommand):
 
                     try:
                         get_user(email)
-                    except User.DoesNotExist:
+                    except get_user_model().DoesNotExist:
                         break
                     else:
                         sys.stderr.write("Error: That email is already taken.\n")
@@ -103,7 +103,7 @@ class Command(BaseCommand):
         if username is None:
             create_superuser(email, password)
         else:
-            User.objects.create_superuser(username, email, password)
+            get_user_model().objects.create_superuser(username, email, password)
 
         if verbosity >= 1:
             self.stdout.write("Superuser created successfully.\n")
